@@ -1,5 +1,8 @@
+import logging; logging.basicConfig(level=logging.INFO)
 from aiohttp import  web
 import asyncio
+
+
 
 
 async def index(request):
@@ -9,6 +12,7 @@ async def init(loop):
     app=web.Application()
     app.router.add_get('/',index)
     srv=await loop.create_server(app._make_handler(),'127.0.0.1',8000)
+    logging.info('server start at http://127.0.0.1:8000')
     print('sever started at ')
     return srv
 
