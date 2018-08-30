@@ -12,10 +12,11 @@ async def create_pool(loop,**kw):
             maxsize=kw.get('maxsize',10),
             host=kw.get('host','localhost'),
             port=kw.get('port',3306),
-            user=kw.get('root'),
+            user=kw.get('user'),
             password=kw.get('password'),
             db=kw.get('database'),
             charset=kw.get('charset','utf8'),
+            autocommit=True,
             loop=loop
         )
 
@@ -25,7 +26,7 @@ async def select(sql,args,size=None):
          global  __pool
          with (await  __pool) as conn:
               cur=await  conn.cursor(aiomysql.DictCursor)
-              await cur.execute(sql.replace('?','%s'),args or())
+              await cur.execute(sql.replace('?','%s'),args)
               if size:
                   rs=await cur.fetchmany(size)
               else:
@@ -41,11 +42,19 @@ async def execute(sql,args):
             try:
 
                  cur=await conn.cursor()
+                 print('sql=',sql.replace('?','%s'))
+                 print('args=',args)
+                 #args=tuple(args)
+                # print('tuple(args)',args)
                  await  cur.execute(sql.replace('?','%s'),args)
+                 print(cur.description)
+                 r=await  cur.fetchall()
+                 print('r=',r)
                  affected=cur.rowcount
+                 print('affected',affected)
                  await cur.close()
             except BaseException as e:
-                 raise
+                      raise
             return affected
 
 
@@ -80,9 +89,9 @@ class ModelMetaclass(type):
         attrs['__primary_key__']=primary_key
         attrs['fields']=fields
         attrs['__select__']='select `%s`,%s from `%s`' % (primary_key,','.join(escaped_fields),tableName)
-        attrs['__insert__']='insert into `%s` (`%s`,%s) values (%s)'  % (tableName,primary_key,','.join(escaped_fields),','.join(['?']*(len(escaped_fields)+1)))#vaules值为空
+        attrs['__insert__']='insert into %s (`%s`,%s) values (%s)'  % (tableName,primary_key,','.join(escaped_fields),','.join(['?']*(len(escaped_fields)+1)))#vaules值为空
         attrs['__update__']='update `%s` set %s where `%s`=?' %(tableName,','.join(list(map(lambda f: '`%s`=?'  %f,fields))),primary_key)
-        attrs['__delete__']='delete from `%s` where `%s`=?' %(tableName,primary_key)
+        attrs['__delete__']='delete from %s  where `%s`=?' %(tableName,primary_key)
         return type.__new__(cls,name,bases,attrs)
 
 
@@ -94,6 +103,8 @@ class Model(dict,metaclass=ModelMetaclass):
         def __init__(self,**kw):
             super(Model,self).__init__(**kw)
             print('Model000000000000000000000')
+            print(type(kw))
+            print(kw)
         def __getattr__(self, key):
               try:
                    return  self[key]
@@ -104,6 +115,11 @@ class Model(dict,metaclass=ModelMetaclass):
               self[key]=value
         def getValue(self,key):
               return  self.__getattr__(key)
+        def getValueordefault(self,key):
+               if key not in self.keys():
+                     return self.__mapping__[key].default
+               else:
+                   return self.__getattr__(key)
 
         @classmethod
         async def find(cls,pk):    #根据主键的值查找
@@ -119,7 +135,8 @@ class Model(dict,metaclass=ModelMetaclass):
                        f.write('drop database if exists webpython;\n')
                        f.write('create database webpython;\n')
                        f.write('use webpython;\n')
-                       f.write('''grant select,insert, update,delete on webpython.* to 'www-data'@'localhost' identified by 'www-data';\n\n\n''')
+                       f.write('''create user 'wing'@'lcoalhost' identified by 'WING';\n''')
+                       f.write('''grant select,insert, update,delete on webpython.* to 'wing'@'localhost' ;\n\n\n''')
               with open('table.sql','a') as f:
                     f.write('create table %s (\n' % cls.__name__)
                     for x,y in cls.__mapping__.items():
@@ -128,20 +145,21 @@ class Model(dict,metaclass=ModelMetaclass):
                          ll.append(y.column_type)
                          ll.append('not null,\n')
                          f.write('   '.join(ll))
-                    f.write('      primary key (`%s`),\n' % cls.__primary_key__)
+                    f.write('      primary key (`%s`)\n' % cls.__primary_key__)
                     f.write(') engine=innodb default charset=utf8;\n\n\n ')
 
         async def save(self):
-                ll= [self.getValue(key) for key in self.__fields__]
-                ll.insert(0, self.getValue(self.__primary_key__))
-
+                ll= [self.getValueordefault(key) for key in self.fields]
+                ll.insert(0, self.getValueordefault(self.__primary_key__))
+                print('oooo',print(ll))
+                print('xxxxx',self.__insert__)
                 rs=await execute(self.__insert__, ll)
                 if rs!=1:
                     logging.warning('insert failed : affected rows:%s' % rs)
 
         async def remove(self):
-               pk=self.getValue(self.__primary_key__)
-               r_find=self.find(pk)
+               pk=self.getValueordefault(self.__primary_key__)
+               r_find=await self.find(pk)
                if r_find is None:
                     logging.warning('table has no this primary_key: %s' % pk)
                rs=await  execute(self.__delete__, pk)
@@ -176,7 +194,7 @@ class IntegerField(Field):
                 super().__init__(name,'bigint',primary_key,default)
 
 class BooleanField(Field):
-        def  __init__(self,name=None,primary_key=False,default=None):
+        def  __init__(self,name=None,primary_key=False,default=False):
                   super().__init__(name,'boolean',primary_key,default)
 class FloatField(Field):
     def  __init__(self,name=None,primary_key=False,default=None):

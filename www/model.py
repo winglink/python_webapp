@@ -9,7 +9,7 @@ class User(Model):
         __table__='user'
 
         id=StringField(primary_key=True,ddl='varchar(50)',default=next_id())
-        email=StringField(ddl='varchar(50')
+        email=StringField(ddl='varchar(50)')
         passwd=StringField(ddl='varchar(50)')
         admin=BooleanField()
         name=StringField(ddl='varchar(50)')
@@ -38,6 +38,3 @@ class Comment(Model):
         content=TextField()
         created_at=FloatField(default=time.time())
 
-User.write_sql()
-Blog.write_sql()
-Comment.write_sql()
