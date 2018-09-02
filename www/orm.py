@@ -21,7 +21,7 @@ async def create_pool(loop,**kw):
         )
 
 
-async def select(sql,args,size=None):
+async def select(sql,*args,size=None):
          #logging.info(sql,args)
          global  __pool
          with (await  __pool) as conn:
@@ -103,8 +103,6 @@ class Model(dict,metaclass=ModelMetaclass):
         def __init__(self,**kw):
             super(Model,self).__init__(**kw)
             print('Model000000000000000000000')
-            print(type(kw))
-            print(kw)
         def __getattr__(self, key):
               try:
                    return  self[key]
@@ -151,8 +149,6 @@ class Model(dict,metaclass=ModelMetaclass):
         async def save(self):
                 ll= [self.getValueordefault(key) for key in self.fields]
                 ll.insert(0, self.getValueordefault(self.__primary_key__))
-                print('oooo',print(ll))
-                print('xxxxx',self.__insert__)
                 rs=await execute(self.__insert__, ll)
                 if rs!=1:
                     logging.warning('insert failed : affected rows:%s' % rs)
@@ -175,6 +171,12 @@ class Model(dict,metaclass=ModelMetaclass):
             rs=await  execute(self.__update__, ll)
             if rs != 1:
                 logging.warning('update  failed : affected rows:%s' % rs)
+
+        @classmethod
+        async def findall(cls):
+                rs=await  select(cls.__select__)
+                return [ cls(**x) for x in rs ]
+
 
 class Field(object):
        def __init__(self,name,column_type,primary_key,default):

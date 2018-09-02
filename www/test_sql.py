@@ -7,7 +7,10 @@ import asyncio
 async def test(loop):
           await  orm.create_pool(loop,user='wing',password='wing',database='webpython')
           u=User(email='test@qq.com',name='ww',passwd='123',image='about:blank')
-          await u.save()
+          users=await User.findall()
+          for u in users:
+              print(u.id)
+              print(u.email)
 
        #   await u.remove()
           orm.__pool.close()
