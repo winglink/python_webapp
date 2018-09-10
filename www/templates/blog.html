@@ -1,0 +1,28 @@
+{% extends "__base__.html" %}
+
+{% block title %} 日志 {% endblock %}
+
+{% block content %}
+      <div class="uk-width-3-4">
+         {% for blog in blogs %}
+
+           <div class="uk-article">
+
+                <h1><a target="_blank" href="/{{ blog.id }}">  {{blog.name}} </a></h1>
+                <p class="uk-article-meta">发表于{{ blog.created_at|create_time_from }}</p>
+                <p>{{ blog.summary }}</p>
+                <a target="_blank" href="/{{ blog.id }}">继续阅读</a>
+                <hr class="uk-article-divider">
+           </div>
+          {% endfor %}
+      </div>
+      <div class="uk-width-1-4">
+           <div class="uk-panel ">
+               <h3 class="uk-panel-title">友情链接</h3>
+                  <ul class=" uk-list uk-list-line">
+                     <li> <a target="_blank" href="https://stackoverflow.com/"><i class="uk-icon-thumbs-o-up">stackoverflow</i> </a></li>
+                     <li> <a target="_blank" href="https://www.wikipedia.org/"><i class="uk-icon-thumbs-o-up">wikipedia</i> </a></li>
+                  </ul>
+           </div>
+      </div>
+{% endblock %}

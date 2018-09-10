@@ -1,13 +1,20 @@
 import orm
 from model import User,Blog,Comment
 import asyncio
+import json
 
 
 
 async def test(loop):
           await  orm.create_pool(loop,user='wing',password='wing',database='webpython')
           u=User(email='test@qq.com',name='ww',passwd='123',image='about:blank')
+          print('type of User',type(User))
           users=await User.findall()
+          rs=dict(users=users)
+         #print('users.dict=',rs.__dict__)
+          print('type of users=',type(users))
+          print('users=',users)
+          print(json.dumps(dict(users=users)))
           for u in users:
               print(u.id)
               print(u.email)

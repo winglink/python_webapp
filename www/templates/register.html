@@ -1,0 +1,121 @@
+{% extends "__base__.html" %}
+
+{% block title %} 注册 {% endblock %}
+{% block beforehead %}
+
+
+<script >
+        function  check_email(email){
+            alert('check email');
+            var regex=/[\w.]+@[\w.]+\.\w+/;
+            var result=regex.test(email)
+            alert(result)
+    return result
+}
+</script>
+
+
+{% endblock %}
+
+
+{% block content %}
+      <form id="app" v-on:submit.prevent="submit" class="uk-form uk-form-stacked uk-form-width-large">
+            <fieldset>
+                 <legend><i class="uk-icon-hand-peace-o uk-icon-medium">欢迎注册</i></legend>
+                 <div class="uk-form-row">
+                     <label class="uk-form-label">请输入你的名字:</label>
+                     <input v-model="name" placeholder="你的名字">
+                 </div>
+                 <div class="uk-form-row">
+                      <label class="uk-form-label">请输入你的邮箱:</label>
+                      <input v-model="email" placeholder="你的邮箱">
+                 </div>
+                 <div class="uk-form-row">
+                     <label class="uk-form-label">请输入你的密码:</label>
+                     <input v-model="password1" placeholder="密码">
+                 </div>
+                 <div class="uk-form-row">
+                     <label class="uk-form-label">重复密码:{{password}}</label>
+                     <input v-model="password2" placeholder="重复密码">
+                 </div>
+                 <div class="uk-form-row">
+                 <button  type="submit"   class="uk-button uk-button-primary" ><i class="uk-icon-user"></i>注册</button>
+                 </div>
+            </fieldset>
+      </form>
+
+<script >
+        var app=new Vue({
+            el: '#app',
+            data:{
+                   counter:0,
+                   name: '',
+                   email:'',
+                   password1:'',
+                   password2:''
+                   },
+            methods: {
+                submit: function(event){
+
+                        this.errors=[];
+                        alert('fsdfsdfsdfdsfsdfsdfsd');
+                       if ( !this.name.trim()){
+                           this.errors.push("请输入你的名字");
+                           alert('11');
+                       }
+                       if ( !this.email.trim()){
+                            this.errors.push("请输入你的邮箱");
+                           alert('22');
+                       }
+                       if ( !check_email(this.email)){
+                            this.errors.push("请重新输入你的邮箱");
+                           alert('33');
+                       }
+                       if ( !this.password1.trim()){
+                            this.errors.push("请输入你的密码");
+                           alert('44');
+                       }
+                       if ( !this.password2.trim()){
+                            this.errors.push("请重复密码");
+                            alert('55');
+                       }
+                       if( this.password1.length<6){
+                             this.errors.push("密码长度小于6");
+                              alert('66');
+                       }
+                       if( this.password1!=this.password2){
+                             this.errors.push("两次输入的密码不一致");
+                             alert('66');
+                       }
+
+                       if(! this.errors.length)
+                       {
+                           alert('xxxxxx')
+                        $.ajax({
+                            type:"POST",
+                            url:"/api/users",
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify( {
+                                       name: this.name.trim(),
+                                       email: this.email.trim(),
+                                       password: CryptoJS.SHA1(this.email.trim()+':'+this.password1.trim()).toString()
+                                       }),
+                             success: function(message){
+                                   if (message>0)
+                                   {
+                                        alert("请求已提交")
+                                   }
+                                  }
+                                });
+                         }
+                      }
+                      }
+            });
+
+</script>
+
+
+
+
+
+{% endblock %}

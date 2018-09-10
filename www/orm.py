@@ -102,7 +102,6 @@ class Model(dict,metaclass=ModelMetaclass):
         Start=True
         def __init__(self,**kw):
             super(Model,self).__init__(**kw)
-            print('Model000000000000000000000')
         def __getattr__(self, key):
               try:
                    return  self[key]
@@ -173,8 +172,16 @@ class Model(dict,metaclass=ModelMetaclass):
                 logging.warning('update  failed : affected rows:%s' % rs)
 
         @classmethod
-        async def findall(cls):
-                rs=await  select(cls.__select__)
+        async def findall(cls,*args,**kw):
+                sorted_by=kw.get('sorted_by')
+                if len(args)>=2:
+                    apd=' where  `%s`=?' %(args[0])
+                    logging.info('apd=%s' %(apd))
+                    rs=await select(cls.__select__+(apd),args[1])
+                else:
+                     rs=await  select(cls.__select__)
+                if sorted_by is not None:
+                     rs=sorted(rs,key=lambda u:u.get(sorted_by))
                 return [ cls(**x) for x in rs ]
 
 

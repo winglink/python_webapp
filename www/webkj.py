@@ -1,6 +1,7 @@
 import functools
 import logging;logging.basicConfig(level=logging.INFO)
 import asyncio
+import os
 from inspect import isfunction
 def get(path):
 
@@ -34,6 +35,13 @@ class RequestHandler(object):
                  pass
                  r=await  self._func(**kw)
                  return r
+def  add_static(app):
+        path=os.path.join(os.path.abspath('.'),'static')
+        app.router.add_static('/static/',path)
+        logging.info('add static path: %s' % path)
+
+
+
 def  add_route(app,fn):
        method=getattr(fn,'__method__',None)
        path=getattr(fn,'__route__',None)
@@ -48,7 +56,7 @@ def add_routes(app,module_name):
         mod=__import__(module_name,globals(),locals())
         logging.info('add_routes')
         for  fn in  dir(mod):
-              if  fn.startswith('__') or fn=='get' or fn=='post':
+              if  fn.startswith('__') or fn=='get' or fn=='post' or fn.startswith('next'):
                   pass
               else:
                    fn=getattr(mod,fn)
