@@ -118,12 +118,7 @@ class Model(dict,metaclass=ModelMetaclass):
                else:
                    return self.__getattr__(key)
 
-        @classmethod
-        async def find(cls,pk):    #根据主键的值查找
-             rs=await  select('%s where `%s`=? ' % (cls.__select__,cls.__primary_key__),[pk])
-             if len(rs)==0:
-                 return None
-             return cls(**rs[0])
+
         @classmethod
         def write_sql(cls):
               if Model.Start==True:
@@ -152,6 +147,7 @@ class Model(dict,metaclass=ModelMetaclass):
                 if rs!=1:
                     logging.warning('insert failed : affected rows:%s' % rs)
 
+
         async def remove(self):
                pk=self.getValueordefault(self.__primary_key__)
                r_find=await self.find(pk)
@@ -160,17 +156,41 @@ class Model(dict,metaclass=ModelMetaclass):
                rs=await  execute(self.__delete__, pk)
                if rs != 1:
                    logging.warning('delete failed : affected rows:%s' % rs)
-
+               return  rs
         async def  update(self):
-            ll = [self.getValue(key) for key in self.__fields__]
-            ll.append(self.getValue(self.__primary_key__))
-            r_find = self.find(ll[-1])
+            ll = [self.getValueordefault(key) for key in self.fields]
+            ll.append(self.getValueordefault(self.__primary_key__))
+            r_find = await self.find(ll[-1])
+
             if r_find is None:
                 logging.warning('table has no this primary_key: %s' % ll[-1])
             rs=await  execute(self.__update__, ll)
             if rs != 1:
                 logging.warning('update  failed : affected rows:%s' % rs)
+        @classmethod
+        async def find_num(cls,args):
+              sql='select %s from  `%s`' % (args,cls.__table__)
+              rs=await  select(sql)
+              num=rs[0].get(args)
+              return  num
 
+        @classmethod
+        async def remove_bypk(cls, pk):
+            logging.info('remove by pk = %s' % (pk))
+            r_find = await cls.find(pk)
+            if r_find is None:
+                logging.warning('table has no this primary_key: %s' % pk)
+            rs = await  execute(cls.__delete__, pk)
+            if rs != 1:
+                logging.warning('delete failed : affected rows:%s' % rs)
+            return rs
+
+        @classmethod
+        async def find(cls, pk):  # 根据主键的值查找
+            rs = await  select('%s where `%s`=? ' % (cls.__select__, cls.__primary_key__), [pk])
+            if len(rs) == 0:
+                return None
+            return cls(**rs[0])
         @classmethod
         async def findall(cls,*args,**kw):
                 sorted_by=kw.get('sorted_by')
@@ -181,7 +201,7 @@ class Model(dict,metaclass=ModelMetaclass):
                 else:
                      rs=await  select(cls.__select__)
                 if sorted_by is not None:
-                     rs=sorted(rs,key=lambda u:u.get(sorted_by))
+                     rs=sorted(rs,key=lambda u:u.get(sorted_by),reverse=True)
                 return [ cls(**x) for x in rs ]
 
 

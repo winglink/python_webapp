@@ -8,10 +8,10 @@
 
            <div class="uk-article">
 
-                <h1><a target="_blank" href="/{{ blog.id }}">  {{blog.name}} </a></h1>
-                <p class="uk-article-meta">发表于{{ blog.created_at|create_time_from }}</p>
-                <p>{{ blog.summary }}</p>
-                <a target="_blank" href="/{{ blog.id }}">继续阅读</a>
+                <h2 class="uk-margin-small"><a target="_blank" href="/{{ blog.id }}">  {{blog.name}} </a></h2>
+                <p class="uk-article-meta uk-margin-small">发表于{{ blog.created_at|create_time_from }}</p>
+                <p class="uk-margin-small">{{ blog.summary }}</p>
+                <a class="uk-margin-small" target="_blank" href="/{{ blog.id }}">继续阅读</a>
                 <hr class="uk-article-divider">
            </div>
           {% endfor %}
@@ -25,4 +25,5 @@
                   </ul>
            </div>
       </div>
+
 {% endblock %}

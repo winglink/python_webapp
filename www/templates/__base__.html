@@ -4,29 +4,16 @@
         <meta charset="utf-8">
         {% block meta %}   {% endblock %}
         <title>{% block title %}          {% endblock %}  </title>
-        <link rel="stylesheet" href="../static/css/uikit.min.css" />
-        <script type="text/javascript" src="../static/js/jquery.js"></script>
-        <script type="text/javascript"  src="../static/js/uikit.min.js"></script>
-        <script type="text/javascript" src="../static/vue.js"></script>
-        <script type="text/javascript" src="../static/cryptojs/components/core-min.js"></script>
-        <script type="text/javascript" src="../static/cryptojs/components/sha1.js"></script>
+        <link rel="stylesheet" href="/static/css/uikit.min.css" />
+        <script type="text/javascript" src="/static/js/jquery.js"></script>
+        <script type="text/javascript"  src="/static/js/uikit.min.js"></script>
+        <script type="text/javascript" src="/static/vue.js"></script>
+        <script type="text/javascript" src="/static/cryptojs/components/core-min.js"></script>
+        <script type="text/javascript" src="/static/cryptojs/components/sha1.js"></script>
 
         {% block beforehead %}     {% endblock %}
     </head>
     <body>
-         <div id="vm">
-              <button v-on:click="counter+=1">增加1</button>
-              <p> 点击了  {{counter}}</p>
-         </div>
-          <script>
-               var vm= new Vue({
-                   el: "#vm",
-                   data: {
-                       counter: 0
-                   }
-
-               })
-        </script>
         <nav class="uk-navbar">
             <a href="#" class="uk-navbar-brand">wingolol</a>
             <ul class="uk-navbar-nav">
@@ -64,7 +51,7 @@
         </div>
 
         <div class="uk-container uk-container-center uk-text-center">
-              <div class="uk-panel uk-position-bottom uk-margin-large-top uk-margin-large-bottom ">
+              <div class="uk-panel  uk-margin-large-top uk-margin-large-bottom ">
                     <a target="_blank" href="https://www.google.com/"><i class="uk-icon-google"></i></a>
                     <a target="_blank" href="https://github.com/"><i class="uk-icon-github"></i></a>
                     <p>Powered by <a href="#">wingolol blog</a>.Copyright &copy：2018.</p>

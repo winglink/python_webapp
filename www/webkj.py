@@ -56,7 +56,8 @@ def add_routes(app,module_name):
         mod=__import__(module_name,globals(),locals())
         logging.info('add_routes')
         for  fn in  dir(mod):
-              if  fn.startswith('__') or fn=='get' or fn=='post' or fn.startswith('next'):
+              if  fn.startswith('__') or fn=='get' or fn=='post'\
+                   or fn.startswith('create_time')   or fn.startswith('check_user') or fn.startswith('next'):
                   pass
               else:
                    fn=getattr(mod,fn)

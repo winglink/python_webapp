@@ -2,7 +2,7 @@ from orm import  Model,StringField,BooleanField,TextField,FloatField
 import time,uuid
 
 def next_id():
-        return  '%15d%s' %(time.time(),uuid.uuid4().hex)
+        return  '%d%s' %(time.time(),uuid.uuid4().hex)
 
 
 class User(Model):

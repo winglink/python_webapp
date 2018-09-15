@@ -7,21 +7,15 @@ import json
 
 async def test(loop):
           await  orm.create_pool(loop,user='wing',password='wing',database='webpython')
-          u=User(email='test@qq.com',name='ww',passwd='123',image='about:blank')
+          u=User(email='bb@bb.com',name='ww',image='about:blank',id='1536851751d32e6d8c9fc14d38b48a122e9f35d05c')
           print('type of User',type(User))
-          users=await User.findall()
-          rs=dict(users=users)
-         #print('users.dict=',rs.__dict__)
-          print('type of users=',type(users))
-          print('users=',users)
-          print(json.dumps(dict(users=users)))
-          for u in users:
-              print(u.id)
-              print(u.email)
 
-       #   await u.remove()
-          orm.__pool.close()
-          await orm.__pool.wait_closed()
+          blog = Blog(id='1536852112447d160b87a24ec7aaddd532b2ca6eba', user_id= '1536851751d32e6d8c9fc14d38b48a122e9f35d05c', user_name='bbb', user_image='xxxx',
+                      name='222',summary='xxx',content='xxx')
+          await blog.update()
+          #user=await User.find('1536671200e7d0b8f55ccb4c03be5be44f37019298')
+
+         # print(json.dumps(dict(user=user)))
 
          # blog=Blog(user_id='1',user_name='sss',name='www',summary='sssss',user_image='sssss',content='sssss')
          # await blog.save()
