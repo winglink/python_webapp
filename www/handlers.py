@@ -9,6 +9,7 @@ import hashlib
 import json
 from urllib import parse
 from handler_by import Page
+import markdown2
 
 _COOKIE_NAME='wingsession'
 _COOKIE_KEY='wwww'
@@ -39,6 +40,21 @@ def check_user(request):
                  return request.__user__
             else:
                  raise Exception('request has no user')
+@get('/blog/{blog_id}')
+async  def get_blog(request):
+         blog_id=request.match_info['blog_id']
+         logging.info('blog_id= %s' %(blog_id))
+         if blog_id:
+             blog = await  Blog.findall('id', blog_id)
+             if len(blog) == 0:
+                 raise Exception('not found blog of this id ')
+             blog = blog[0]
+             blog['created_at'] = create_time(blog['created_at'])
+             blog.html_content=markdown2.markdown(blog.content)
+         return {
+             '__template__':'get_blog.html',
+             'blog': blog,
+                }
 
 @get('/')
 async def index(request):
@@ -49,10 +65,13 @@ async def index(request):
             kw[k] = v[0]
             page = kw.get('page_index', '1')
             page_index = int(page)
+            if page_index<1:
+                 page_index=1
     else:
          page_index=1
     num = await Blog.find_num(args='count(id)')
     logging.info('find blog number is %s' % (num))
+    logging.info('page_index= %s' % (page_index))
     p = Page(item_count=num, page_index=page_index,page_size=5)
     if num == 0:
         page=p
@@ -71,13 +90,13 @@ async def index(request):
              '__template__':'blog.html',
              'blogs': blogs,
              'user':request.__user__,
-             'page':p
+             'page':p.__dict__
                 }
     else:
          return {
             '__template__':'blog.html',
             'blogs': blogs,
-             'page':p
+             'page':p.__dict__
        }
 
 @get('/users')
@@ -122,7 +141,7 @@ async def manage_blogs(request):
         kw = dict()
         for k, v in parse.parse_qs(qs).items():
             kw[k] = v[0]
-        page = kw.get('page', '1')
+        page = kw.get('page_index', '1')
         page_index = int(page)
     else:
         page_index=1

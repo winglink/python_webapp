@@ -6,9 +6,9 @@ def next_id():
 
 
 class User(Model):
-        __table__='user'
+        __table__='User'
 
-        id=StringField(primary_key=True,ddl='varchar(50)',default=next_id())
+        id=StringField(primary_key=True,ddl='varchar(50)',default=next_id)
         email=StringField(ddl='varchar(50)')
         passwd=StringField(ddl='varchar(50)')
         admin=BooleanField()
@@ -16,9 +16,9 @@ class User(Model):
         image=StringField(ddl='varchar(500)')
         created_at=FloatField(default=time.time())
 class Blog(Model):
-        __table__='blog'
+        __table__='Blog'
 
-        id=StringField(primary_key=True,ddl='varchar(50)',default=next_id())
+        id=StringField(primary_key=True,ddl='varchar(50)',default=next_id)
         user_id=StringField(ddl='varchar(50)')
         user_name=StringField(ddl='varchar(50)')
         user_image=StringField(ddl='varchar(500)')
@@ -28,9 +28,9 @@ class Blog(Model):
         created_at=FloatField(default=time.time())
 
 class Comment(Model):
-        __table__='comment'
+        __table__='Comment'
 
-        id=StringField(primary_key=True,ddl='varchar(50)',default=next_id())
+        id=StringField(primary_key=True,ddl='varchar(50)',default=next_id)
         blog_id=StringField(ddl='varchar(50)')
         user_id=StringField(ddl='varchar(50)')
         user_name=StringField(ddl='varchar(50)')

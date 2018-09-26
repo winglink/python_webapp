@@ -4,7 +4,6 @@
 {% block beforehead %}
  <script>
        $(function () {
-             alert('function');
              page_index_c={{ page_index }};
              $.ajax({
                     type: 'GET',
@@ -12,13 +11,18 @@
                     data: {page_index:  page_index_c },
                     dataType: "json",
                     success:  function (result) {
-                         alert('get success');
-                         alert(result)
                          init(result);
                     }
              });
        });
        function init(result) {
+            new Vue({
+                el: '#app2',
+                data:{
+                      page: result.page
+                }
+
+            });
             new Vue({
                   el: '#app',
                   data:{
@@ -28,18 +32,15 @@
                       },
                       methods: {
                   edit: function(blog){
-                        alert('edit function');
                         location.assign('/manage/blog/edit?blog_id='+blog.id);
                         },
                   delete_vue: function(blog) {
-                            alert('delete funciton');
                             if(confirm('确认删除'+blog.name)){
                                 $.ajax({
                                       type: 'GET',
                                        url: '/api/blog/delete',
                                        data: {blog_id: blog.id},
                                        success:  function (result) {
-                                               alert('delete success');
                                                location.reload();
                                                }
                                 });
@@ -87,7 +88,14 @@
                     </tr>
             </tbody>
        </table>
-       <ul class="uk-pagination uk-container-center">
+           <div id="app2"  class="uk-container-center" >
+               <fenye2 v-bind:page="page"></fenye2>
+            </div>
+
+
+
+
+    <!--  <ul class="uk-pagination uk-container-center">
               <li>
                     <a href=""><i class="uk-icon-angle-double-left"></i></a>
               </li>
@@ -104,6 +112,7 @@
                    <a href=""><i class="uk-icon-angle-double-right"></i></a>
                </li>
        </ul>
+      -->
 
 
 {% endblock %}

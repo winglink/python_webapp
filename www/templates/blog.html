@@ -1,21 +1,62 @@
 {% extends "__base__.html" %}
 
 {% block title %} 日志 {% endblock %}
+{% block beforehead   %}
+  <script>
 
+        $( function () {
+              new Vue({
+                  el: '#app',
+                  data:{
+                        n: 0,
+                        page:{{  page }}
+                      },
+                      methods: {
+                  get_page: function(page_index){
+                        alert('get_page function');
+                        location.assign('/?page_index='+page_index);
+                        },
+                  delete_vue: function(blog) {
+                            alert('delete funciton');
+                            if(confirm('确认删除'+blog.name)){
+                                $.ajax({
+                                      type: 'GET',
+                                       url: '/api/blog/delete',
+                                       data: {blog_id: blog.id},
+                                       success:  function (result) {
+                                               alert('delete success');
+                                               location.reload();
+                                               }
+                                });
+                            }
+                          }
+        }
+    });
+        })
+
+
+
+  </script>
+
+
+
+
+{% endblock %}
 {% block content %}
       <div class="uk-width-3-4">
          {% for blog in blogs %}
 
            <div class="uk-article">
 
-                <h2 class="uk-margin-small"><a target="_blank" href="/{{ blog.id }}">  {{blog.name}} </a></h2>
+                <h2 class="uk-margin-small"><a target="_blank" href="/blog/{{ blog.id }}">  {{blog.name}} </a></h2>
                 <p class="uk-article-meta uk-margin-small">发表于{{ blog.created_at|create_time_from }}</p>
                 <p class="uk-margin-small">{{ blog.summary }}</p>
-                <a class="uk-margin-small" target="_blank" href="/{{ blog.id }}">继续阅读</a>
+                <a class="uk-margin-small" target="_blank" href="/blog/{{ blog.id }}">继续阅读</a>
                 <hr class="uk-article-divider">
            </div>
           {% endfor %}
       </div>
+
       <div class="uk-width-1-4">
            <div class="uk-panel ">
                <h3 class="uk-panel-title">友情链接</h3>
@@ -25,5 +66,7 @@
                   </ul>
            </div>
       </div>
-
+ <div id="app"  class="uk-container-center" >
+      <fenye v-bind:page="page"></fenye>
+ </div>
 {% endblock %}

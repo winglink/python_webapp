@@ -3,7 +3,7 @@
 {% block title %} 编辑日志 {% endblock %}
 {% block beforehead %}
  <script>
-      var blog_id= '{{ blog_id }}';
+      var blog_id= {{ blog_id }};
       $(function() {
              if (   blog_id  ) {
                $.ajax({
